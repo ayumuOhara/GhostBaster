@@ -2,7 +2,9 @@ using UnityEngine;
 
 public class LightController : MonoBehaviour
 {
-    const float DEFAULT_SCALE = 2.0f;
+    [SerializeField] BatteryManager batteryManager;
+
+    const float DEFAULT_SCALE = 2.5f;
 
     [Header("ÉâÉCÉgÇÃägèkÇÃç≈ëÂíl")]
     [SerializeField] float maxLightRange;
@@ -14,6 +16,9 @@ public class LightController : MonoBehaviour
     public float CurrentLightRange => lightRange;
     public float LightRangeRatio => lightRange / DEFAULT_SCALE;
 
+    Vector2 lightPos;
+    public Vector2 LightPos => lightPos;
+
     [Header("ÉâÉCÉgÇÃägèkÇÃïœâªë¨ìx")]
     [SerializeField] float zoomSpd;
 
@@ -24,6 +29,7 @@ public class LightController : MonoBehaviour
     void Start()
     {
         ResetLightRange();
+
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Confined;
     }
@@ -31,15 +37,21 @@ public class LightController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Move();
-        LightRangeFiddle();
+        if (batteryManager.HasPower)
+        {
+            Move();
+            LightRangeFiddle();
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     void Move()
     {
-        var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        pos.z = 0;
-        transform.position = pos;
+        lightPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        transform.position = lightPos;
     }
 
     void LightRangeFiddle()
